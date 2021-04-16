@@ -5,6 +5,8 @@ import string
 import psycopg2
 import pandas as pd
 from datetime import datetime
+from models import Student
+from random import choice as randchoice
 
 
 class DBConnection:
@@ -51,6 +53,33 @@ class DBConnection:
                                "SET name = %(name)s "
                                "WHERE id = %(id)s", {'id': id, 'name': new_name})
 
+    def register_student(self, student):
+        student_id = self.generate_id('std')
+        student.id = student_id
+        with self._connection:
+            with self._connection.cursor() as cursor:
+                cursor.execute("INSERT INTO students (id, name, mail, unv_id) "
+                               "(SELECT %s, %s, %s, id "
+                               "FROM universities "
+                               "WHERE name = %s)",
+                               (student_id, student.name, student.mail, student.university))
+
+    def get_student_by_mail(self, mail):
+        with self._connection:
+            with self._connection.cursor() as cursor:
+                cursor.execute("SELECT students.id, students.name, universities.name "
+                               "FROM students "
+                               "LEFT JOIN universities "
+                               "ON students.unv_id = universities.id "
+                               "WHERE mail = %s",
+                               (mail,))
+                data = cursor.fetchone()
+                student = None
+                if data:
+                    student_id, name, university = data
+                    student = Student(name, mail, university, student_id)
+        return student
+
     def save_response(self, std_id, pos_id, characteristics):
         with self._connection:
             with self._connection.cursor() as cursor:
@@ -88,7 +117,7 @@ class DBConnection:
 
     def close_connection(self):
         if self._connection is not None:
-            print('go to close')
+            # print('go to close')
             self._connection.close()
             print('Database connection closed.')
 
@@ -99,4 +128,29 @@ if __name__ == "__main__":
     connection.open_connection()
     # print(connection.generate_id("usr"))
     # print(connection.get_students())
+    # st = Student('Denis Kyznec1', 'test1@test.com', 'UCU')
+    # connection.register_student(st)
+    # st = connection.get_student_by_mail('test1@test.com')
+    # print(st.name)
+    std_ids = ['std-16186-MpiQ7X-06504', 'std-16186-pVYxDM-06575']
+    pos_ids = ['pos-16185-0epVeI-99240', 'pos-16185-0WJIl5-99238']
+    characteristics = {'general': 5,
+                       'sufficiency': 4,
+                       'relevance': 5,
+                       'loyalty': 5,
+                       'politeness': 2,
+                       'material': 4,
+                       'punctuality': 4,
+                       'objectivity': 4,
+                       'adaptation': 3,
+                       'complexity': 5}
+    for i in range(10):
+        if i % 2 == 0:
+            for key in characteristics:
+                characteristics[key] = random.randint(4, 5)
+        else:
+            for key in characteristics:
+                characteristics[key] = random.randint(1, 3)
+        connection.save_response(randchoice(std_ids), randchoice(pos_ids), characteristics)
+        print('response saved')
     connection.close_connection()

@@ -29,10 +29,11 @@ class Characteristic:
         self.question_text = question_text
 
 
+
 class Response:
     def __init__(self, position, student, characteristics):
-        self.position = position
-        self.student = student
+        self.position_id = position
+        self.student_id = student
         self.characteristics = characteristics
 
     def serialize(self):
@@ -40,7 +41,9 @@ class Response:
 
 
 class Student:
-    def __init__(self, name, mail, university):
+    def __init__(self, name, mail, university, student_id=None):
+        # added attribute 'id', because it may be useful later
+        self.id = student_id
         self.name = name
         self.mail = mail
         self.university = university
