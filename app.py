@@ -1,96 +1,84 @@
 import flask
-import aiofiles
+from flask_login import LoginManager
 
-
+import auth
 
 app = flask.Flask('__main__',
                   static_folder='./front/build/static',
                   template_folder='./front/build')
+app.config['SESSION_COOKIE_NAME'] = 'google-login-session'
+app.secret_key = "something_secret"
+
+app.register_blueprint(auth.app)
+
+login_manager = LoginManager(app)
+
 
 @app.route('/')
 def main():
-    ### Process
-    data = 'Main page' # Fetched data from db or api
-    ###
-    return flask.render_template('index.html', token=data) 
+    data = 'Main page'
+    return flask.render_template('index.html', token=data)
+
 
 @app.route('/registration')
 def registration():
-    ### Process
     data = 'Registration'
-    ###
     return flask.render_template('index.html', token=data)
+
 
 @app.route('/profile')
 def profile():
-    ### Process
-    data = 'Profile' # Fetched data from db or api
-    ### 
+    data = 'Profile'
     return flask.render_template('index.html', token=data)
+
 
 @app.route('/universities')
 def universities():
-    ### Process
-    data = 'Universities' # Fetched data from db or api
-    ### 
+    data = 'Universities'
     return flask.render_template('index.html', token=data)
+
 
 @app.route('/lecturers')
 def lecturers():
-    ### Process
-    data = 'Lecturers' # Fetched data from db or api
-    ### 
+    data = 'Lecturers'
     return flask.render_template('index.html', token=data)
 
-@app.route('/login')
-def login():
-    ### Process
-    data = 'Login' # Fetched data from db or api
-    ### 
+
+@app.route('/university_<m_id>')
+def university(m_id):
+    data = 'Universities'
     return flask.render_template('index.html', token=data)
 
-@app.route('/universities/<id>')
-def university():
-    ### Process
-    data = 'Universities' # Fetched data from db or api
-    ### 
+
+@app.route('/lecturer_<m_id>')
+def lecturer(m_id):
+    data = 'Lecturers'
     return flask.render_template('index.html', token=data)
 
-@app.route('/lecturers/<id>')
-def lecturer():
-    ### Process
-    data = 'Lecturers' # Fetched data from db or api
-    ### 
+
+@app.route('/lecturersurvey_<m_id>')
+def lecturer_survey(m_id):
+    data = 'Login'
     return flask.render_template('index.html', token=data)
 
-@app.route('/lecturer/<id>/survey')
-def lecturer_survey():
-    ### Process
-    data = 'Login' # Fetched data from db or api
-    ### 
+
+@app.route('/survey_<m_id>')
+def survey(m_id):
+    data = 'Universities'
     return flask.render_template('index.html', token=data)
 
-@app.route('/surveys/<id>')
-def survey():
-    ### Process
-    data = 'Universities' # Fetched data from db or api
-    ### 
-    return flask.render_template('index.html', token=data)
 
 @app.route('/surveys')
 def surveys():
-    ### Process
-    data = 'Lecturers' # Fetched data from db or api
-    ### 
+    data = 'Lecturers'
     return flask.render_template('index.html', token=data)
 
 
-@app.route('/media/<id>')
-def plotly_graph(id):
-    ### Process
-    data = 'Media' + str(id) # Fetched data from db or api
-    ### 
+@app.route('/media/<m_id>')
+def plotly_graph(m_id):
+    data = 'Media' + str(m_id)
     return flask.render_template('plotly_graph.html', token=data)
 
 
-app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True)

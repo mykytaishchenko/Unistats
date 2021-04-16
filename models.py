@@ -1,14 +1,39 @@
-# class DBObject:
-#     def
+from flask_login import UserMixin
 
-class Teacher:
-    def __init__(self, name, photo_url):
+
+class Student(UserMixin):
+    def __init__(self, stud_id, name, mail, university_id):
+        self.id = stud_id
         self.name = name
-        self.photo_url = photo_url
+        self.mail = mail
+        self.university_id = university_id
 
     def serialize(self):
-        return self.name, self.photo_url
+        return self.id, self.name, self.mail, self.university_id
 
+
+class Teacher:
+    def __init__(self, teacher_id, name, mail, course, description, photo_url, teacher_page):
+        self.id = teacher_id
+        self.name = name
+        self.mail = mail
+        self.course = course
+        self.description = description
+        self.photo_url = photo_url
+        self.teacher_page = teacher_page
+
+    def serialize(self):
+        return self.id, self.name, self.mail, self.course, \
+               self.description, self.photo_url, self.teacher_page
+
+
+#
+#
+#
+#
+#
+#
+#
 
 
 class Position:
@@ -23,33 +48,11 @@ class Position:
                 self.course, self.teacher)
 
 
-class Characteristic:
-    def __init__(self, name, question_text):
-        self.name = name
-        self.question_text = question_text
-
-
 class Response:
-    def __init__(self, position, student, characteristics):
-        self.position = position
-        self.student = student
-        self.characteristics = characteristics
+    def __init__(self, teacher_id: int, student_id: int, answers: dict):
+        self.teacher_id = teacher_id
+        self.student_id = student_id
+        self.answers = answers
 
     def serialize(self):
-        return self.position, self.student, self.characteristics
-
-
-class Student:
-    def __init__(self, name, mail, university):
-        self.name = name
-        self.mail = mail
-        self.university = university
-
-    def serialize(self):
-        return self.name, self.mail, self.university
-
-
-# class
-
-if __name__ == "__main__":
-    t = Teacher('', '')
+        return self.teacher_id, self.student_id, self.answers
