@@ -56,3 +56,9 @@ class Response:
 
     def serialize(self):
         return self.teacher_id, self.student_id, self.answers
+
+
+class Characteristic:
+    def __init__(self, name, question_text):
+        self.name = name
+        self.question_text = question_text
