@@ -97,7 +97,20 @@ class DBConnection:
                                    (response_id, value, name))
                     # car_id = cursor.fetchone()[0]
 
-
+    def get_responses_by_position_id(self, pos_id):
+        with self._connection:
+            with self._connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT array_agg(characteristics.name || ':' || responses_characteristics.car_value) "
+                    "FROM responses_characteristics "
+                    "LEFT JOIN responses ON responses_characteristics.resp_id = responses.id "
+                    "LEFT JOIN characteristics ON responses_characteristics.car_id = "
+                    "characteristics.id "
+                    "WHERE pos_id = %s"
+                    "GROUP BY responses.id",
+                    (pos_id,))
+                characteristics = cursor.fetchall()
+        return characteristics
 
     def generate_id(self, prefix):
         now = datetime.now()
@@ -144,13 +157,15 @@ if __name__ == "__main__":
                        'objectivity': 4,
                        'adaptation': 3,
                        'complexity': 5}
-    for i in range(10):
-        if i % 2 == 0:
-            for key in characteristics:
-                characteristics[key] = random.randint(4, 5)
-        else:
-            for key in characteristics:
-                characteristics[key] = random.randint(1, 3)
-        connection.save_response(randchoice(std_ids), randchoice(pos_ids), characteristics)
-        print('response saved')
+    # for i in range(10):
+    #     if i % 2 == 0:
+    #         for key in characteristics:
+    #             characteristics[key] = random.randint(4, 5)
+    #     else:
+    #         for key in characteristics:
+    #             characteristics[key] = random.randint(1, 3)
+    #     connection.save_response(randchoice(std_ids), randchoice(pos_ids), characteristics)
+    #     print('response saved')
+    chs = connection.get_responses_by_position_id('pos-16185-0WJIl5-99238')
+    print(chs)
     connection.close_connection()
