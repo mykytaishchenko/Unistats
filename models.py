@@ -1,7 +1,4 @@
-from flask_login import UserMixin
-
-
-class Student(UserMixin):
+class Student:
     def __init__(self, stud_id, name, mail, university_id):
         self.id = stud_id
         self.name = name
