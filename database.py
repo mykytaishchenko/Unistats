@@ -5,7 +5,7 @@ import string
 import psycopg2
 import pandas as pd
 from datetime import datetime
-from models import Student
+from models import Student, Response
 from random import choice as randchoice
 
 
@@ -19,39 +19,39 @@ class DBConnection:
         # self._database_url = "postgresql://postgres@localhost:5432/teach_test"
         # self._database_url = os.environ['DATABASE_URL']
 
-    def add_student(self):
-        # provides auto commit and close
-        with self._connection:
-            with self._connection.cursor() as cursor:
-                cursor.execute(
-                    "INSERT INTO students (name) VALUES (%(name)s);",
-                    {'name': "Viktor"})
-
-    def get_students(self):
-        query = f"""SELECT * 
-                     FROM students 
-                     """
-        # results = pd.read_sql(query, self._connection)
-        # print(results)
-        with self._connection:
-            with self._connection.cursor() as cursor:
-                cursor.execute(query)
-                results = cursor.fetchall()
-
-        return results
-
-    def delete_user(self, id):
-        with self._connection:
-            with self._connection.cursor() as cursor:
-                cursor.execute("DELETE FROM students "
-                               "WHERE id = %s", (id,))
-
-    def update_user(self, id, new_name):
-        with self._connection:
-            with self._connection.cursor() as cursor:
-                cursor.execute("UPDATE students "
-                               "SET name = %(name)s "
-                               "WHERE id = %(id)s", {'id': id, 'name': new_name})
+    # def add_student(self):
+    #     # provides auto commit and close
+    #     with self._connection:
+    #         with self._connection.cursor() as cursor:
+    #             cursor.execute(
+    #                 "INSERT INTO students (name) VALUES (%(name)s);",
+    #                 {'name': "Viktor"})
+    #
+    # def get_students(self):
+    #     query = f"""SELECT *
+    #                  FROM students
+    #                  """
+    #     # results = pd.read_sql(query, self._connection)
+    #     # print(results)
+    #     with self._connection:
+    #         with self._connection.cursor() as cursor:
+    #             cursor.execute(query)
+    #             results = cursor.fetchall()
+    #
+    #     return results
+    #
+    # def delete_user(self, id):
+    #     with self._connection:
+    #         with self._connection.cursor() as cursor:
+    #             cursor.execute("DELETE FROM students "
+    #                            "WHERE id = %s", (id,))
+    #
+    # def update_user(self, id, new_name):
+    #     with self._connection:
+    #         with self._connection.cursor() as cursor:
+    #             cursor.execute("UPDATE students "
+    #                            "SET name = %(name)s "
+    #                            "WHERE id = %(id)s", {'id': id, 'name': new_name})
 
     def register_student(self, student):
         student_id = self.generate_id('std')
@@ -80,15 +80,15 @@ class DBConnection:
                     student = Student(name, mail, university, student_id)
         return student
 
-    def save_response(self, std_id, pos_id, characteristics):
+    def save_response(self, response):
         with self._connection:
             with self._connection.cursor() as cursor:
                 response_id = self.generate_id('resp')
                 cursor.execute("INSERT INTO responses (id, pos_id, std_id) "
                                "VALUES (%s, %s, %s)",
-                               (response_id, pos_id, std_id))
+                               (response_id, response.position_id, response.student_id))
 
-                for name, value in characteristics.items():
+                for name, value in response.characteristics.items():
                     cursor.execute("INSERT INTO "
                                    "responses_characteristics (resp_id, car_id, car_value) "
                                    "(SELECT %s, id, %s "
@@ -101,7 +101,7 @@ class DBConnection:
         with self._connection:
             with self._connection.cursor() as cursor:
                 cursor.execute(
-                    "SELECT array_agg(characteristics.name || ':' || responses_characteristics.car_value) "
+                    "SELECT array_agg(characteristics.name || ':' || responses_characteristics.car_value), responses.std_id "
                     "FROM responses_characteristics "
                     "LEFT JOIN responses ON responses_characteristics.resp_id = responses.id "
                     "LEFT JOIN characteristics ON responses_characteristics.car_id = "
@@ -109,8 +109,24 @@ class DBConnection:
                     "WHERE pos_id = %s"
                     "GROUP BY responses.id",
                     (pos_id,))
-                characteristics = cursor.fetchall()
-        return characteristics
+                characteristics_info = cursor.fetchall()
+        responses = []
+        for characteristics, std_id in characteristics_info:
+            characteristics = {ch.split(":")[0]: ch.split(":")[1] for ch in characteristics}
+            response = Response(pos_id, std_id, characteristics)
+            responses.append(response)
+        return responses
+
+    def get_university_id_by_domain(self, domain):
+        with self._connection:
+            with self._connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT id "
+                    "FROM universities "
+                    "WHERE domain = %s",
+                    (domain,))
+                unv_id = cursor.fetchone()[0]
+        return unv_id
 
     def generate_id(self, prefix):
         now = datetime.now()
@@ -143,8 +159,8 @@ if __name__ == "__main__":
     # print(connection.get_students())
     # st = Student('Denis Kyznec1', 'test1@test.com', 'UCU')
     # connection.register_student(st)
-    # st = connection.get_student_by_mail('test1@test.com')
-    # print(st.name)
+    # st = connection.get_student_by_mail('test123@test.com')
+    # print(st)
     std_ids = ['std-16186-MpiQ7X-06504', 'std-16186-pVYxDM-06575']
     pos_ids = ['pos-16185-0epVeI-99240', 'pos-16185-0WJIl5-99238']
     characteristics = {'general': 5,
@@ -166,6 +182,8 @@ if __name__ == "__main__":
     #             characteristics[key] = random.randint(1, 3)
     #     connection.save_response(randchoice(std_ids), randchoice(pos_ids), characteristics)
     #     print('response saved')
-    chs = connection.get_responses_by_position_id('pos-16185-0WJIl5-99238')
-    print(chs)
+    # chs = connection.get_responses_by_position_id('pos-16185-0WJIl5-99238')
+    # print(list(map(str, chs)))
+    unv_id = connection.get_university_id_by_domain('ucu.edu.ua')
+    print(unv_id)
     connection.close_connection()
