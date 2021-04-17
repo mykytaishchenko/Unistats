@@ -32,6 +32,7 @@ def profile():
 
 @app.route('/universities')
 def universities():
+    print(logic.data_universities())
     return flask.render_template('index.html', token=logic.data_universities())
 
 
@@ -42,8 +43,8 @@ def lecturers():
 
 @app.route('/university_<m_id>')
 def university(m_id):
-    university_id = 'unv-16185-0rsESB-99209'
-    return flask.render_template('index.html', token=logic.data_university(university_id))
+    # m_id = 'unv-16185-0rsESB-99209'
+    return flask.render_template('index.html', token=logic.data_university(m_id))
 
 
 @app.route('/lecturer_<m_id>')
