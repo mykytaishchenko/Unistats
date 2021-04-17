@@ -5,7 +5,7 @@ import string
 import psycopg2
 import pandas as pd
 from datetime import datetime
-from models import Student, Response, University
+from models import Student, Response, University, Position
 from random import choice as randchoice
 
 
@@ -155,6 +155,51 @@ class DBConnection:
         university = University(obj[0], obj[1], obj[2])
         return university
 
+    def get_teachers_by_university_id(self, university_id):
+        with self._connection:
+            with self._connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT positions.id, unv_id, fcl_id, cor_id, tec_id, teachers.name, photo "
+                    "FROM positions "
+                    "LEFT JOIN teachers ON positions.tec_id = teachers.id "
+                    "WHERE unv_id = %s",
+                    (university_id,))
+                objects = cursor.fetchall()
+        positions = []
+        if objects is not None:
+            for obj in objects:
+                position = Position(*obj)
+                positions.append(position)
+            return positions
+
+    def get_position_by_position_id(self, position_id):
+        with self._connection:
+            with self._connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT positions.id, unv_id, fcl_id, cor_id, tec_id, teachers.name, photo "
+                    "FROM positions "
+                    "LEFT JOIN teachers ON positions.tec_id = teachers.id "
+                    "WHERE positions.id = %s",
+                    (position_id,))
+                obj = cursor.fetchone()
+        if obj is not None:
+            return Position(*obj)
+
+    def get_all_positions(self):
+        with self._connection:
+            with self._connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT positions.id, unv_id, fcl_id, cor_id, tec_id, teachers.name, photo "
+                    "FROM positions "
+                    "LEFT JOIN teachers ON positions.tec_id = teachers.id")
+                objects = cursor.fetchall()
+        positions = []
+        if objects is not None:
+            for obj in objects:
+                position = Position(*obj)
+                positions.append(position)
+            return positions
+
     def generate_id(self, prefix):
         now = datetime.now()
         timestamp = str(round(datetime.timestamp(now)))
@@ -217,4 +262,14 @@ if __name__ == "__main__":
     print([un.__dict__ for un in uns])
     un = connection.get_university_by_id('unv-16185-0rsESB-99209')
     print(un.__dict__)
+
+    ps = connection.get_teachers_by_university_id('unv-16185-0rsESB-99209')
+    print([p.__dict__ for p in ps])
+
+    one_pos = connection.get_position_by_position_id('pos-16185-e4LFqt-99219')
+    print(one_pos.__dict__)
+
+    all_ps = connection.get_all_positions()
+    print([p.__dict__ for p in ps])
+
     connection.close_connection()

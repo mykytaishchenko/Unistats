@@ -13,11 +13,14 @@ class University:
         self.domain = domain
 
 class Position:
-    def __init__(self, university, faculty, course, teacher):
-        self.university = university
-        self.faculty = faculty
-        self.course = course
-        self.teacher = teacher
+    def __init__(self, position_id, university_id, faculty_id, course_id, teacher_id, teacher_name, teacher_photo):
+        self.id = position_id
+        self.university_id = university_id
+        self.faculty_id = faculty_id
+        self.course_id = course_id
+        self.teacher_id = teacher_id
+        self.teacher_name = teacher_name
+        self.teacher_photo = teacher_photo
 
     def serialize(self):
         return (self.university, self.faculty,
