@@ -70,8 +70,9 @@ def no_cache(view):
 @app.route('/login')
 @no_cache
 def login():
-    if is_logged_in():
-        return redirect(BASE_URI)
+    flask.session.pop(AUTH_TOKEN_KEY, None)
+    flask.session.pop(AUTH_STATE_KEY, None)
+
     session = OAuth2Session(CLIENT_ID, CLIENT_SECRET,
                             scope=AUTHORIZATION_SCOPE,
                             redirect_uri=AUTH_REDIRECT_URI)
