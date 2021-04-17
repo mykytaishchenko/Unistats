@@ -59,10 +59,11 @@ class DBConnection:
         with self._connection:
             with self._connection.cursor() as cursor:
                 cursor.execute("INSERT INTO students (id, name, mail, unv_id) "
-                               "(SELECT %s, %s, %s, id "
-                               "FROM universities "
-                               "WHERE name = %s)",
-                               (student_id, student.name, student.mail, student.university))
+                               # "(SELECT %s, %s, %s, id "
+                               # "FROM universities "
+                               # "WHERE name = %s)",
+                               "VALUES (%s, %s, %s, %s)",
+                               (student_id, student.name, student.mail, student.university_id))
 
     def get_student_by_mail(self, mail):
         with self._connection:
@@ -158,8 +159,8 @@ if __name__ == "__main__":
     connection.open_connection()
     # print(connection.generate_id("usr"))
     # print(connection.get_students())
-    # st = Student('Denis Kyznec1', 'test1@test.com', 'UCU')
-    # connection.register_student(st)
+    st = Student('Denis Kyznec1', 'test2@test.com', 'unv-16185-0rsESB-99209')
+    connection.register_student(st)
     # st = connection.get_student_by_mail('test123@test.com')
     # print(st)
     std_ids = ['std-16186-MpiQ7X-06504', 'std-16186-pVYxDM-06575']

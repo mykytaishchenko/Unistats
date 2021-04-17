@@ -41,12 +41,12 @@ class Response:
 
 
 class Student:
-    def __init__(self, name, mail, university, student_id=None):
+    def __init__(self, name, mail, university_id, student_id=None):
         # added attribute 'id', because it may be useful later
         self.id = student_id
         self.name = name
         self.mail = mail
-        self.university = university
+        self.university_id = university_id
 
     def serialize(self):
         return self.name, self.mail, self.university
