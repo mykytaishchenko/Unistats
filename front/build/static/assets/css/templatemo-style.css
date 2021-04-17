@@ -140,6 +140,10 @@ section {
 .main-banner .banner-content .banner-caption p {
 	margin-bottom: 30px;
 }
+.main-banner .banner-content .banner-caption em {
+	color: #535ba0;
+    font-weight: bold;
+}
 
 
 /* Services */
@@ -1370,3 +1374,6 @@ section.buttons .container-fluid {
     margin:10px;
 }
 
+.border-radius-button button:hover{
+    color:hsl(253, 83%, 62%)
+  }
