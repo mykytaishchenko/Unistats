@@ -257,7 +257,117 @@ def get_all_universities_statistics(df: pd.DataFrame) -> str:
         'displayModeBar': False
     })
 
+def get_universities_comparison(df : pd.DataFrame) -> str:
+    """Return HTML code, that represents a chart showing comperison of universities.
+    User can select which two universities to compare by using dropdown menu.
 
+    Parameters
+    ----------
+    df : DataFrame
+        each row represents a university and each column represents a characteristic.
+    """
+    d = {'x': [], 'y': [], 'group': []}
+    for i in df.index:
+        d['group'].extend([i]*df.shape[1])
+        d['x'].extend(list(df.columns))
+        d['y'].extend(list(df.loc[i]))
+    df1 = pd.DataFrame(data=d)
+
+    # split df1 by groups and organize them in a dict
+    groups = df1['group'].unique().tolist()
+    dfs={}
+    for g in groups:
+        dfs[str(g)]=df1[df1['group']==g]
+
+
+
+    # one trace for each column per dataframe
+    fig=go.Figure()
+
+    # set up the first trace
+    fig.add_trace(go.Bar(x=dfs[df.index[0]]['x'], customdata=[df.index[0]]*df.shape[1], text = df.index[0],
+                                y=dfs[df.index[0]]['y'], texttemplate="%{customdata}", textposition = 'outside',
+                                visible=True, hovertemplate="%{y:.2f}<extra></extra>", name=df.index[0])
+                )
+    # set up the second trace
+    fig.add_trace(go.Bar(x=dfs[df.index[1]]['x'], customdata=[df.index[1]]*df.shape[1], text = df.index[1],
+                                y=dfs[df.index[1]]['y'], texttemplate="%{customdata}", textposition = 'outside',
+                                hovertemplate="%{y:.2f}<extra></extra>", name=df.index[1])
+                )
+
+    buttons1=[]
+
+    # button with one option for each dataframe
+    for df1 in dfs.keys():
+        #print(b, df)
+        buttons1.append(dict(method='restyle',
+                            label=df1,
+                            visible=True,
+                            args=[{'y':[dfs[str(df1)]['y'].values],
+                                'customdata':([df1]*df.shape[1],),
+                                'name': df1}, [0]],
+                            )
+                    )
+
+    # another button with one option for each dataframe
+    buttons2=[]
+    for df1 in dfs.keys():
+        buttons2.append(dict(method='restyle',
+                            label=df1,
+                            visible=True,
+                            args=[{'y':[dfs[str(df1)]['y'].values],
+                                'customdata':([df1]*df.shape[1],),
+                                    'name': df1}, [1]],
+                            ),
+                    )
+
+    updatemenu=[dict(), dict()]
+
+    updatemenu[0]['buttons']=buttons1
+    updatemenu[0]['direction']='down'
+    updatemenu[0]['showactive']=True
+    updatemenu[0]['y']=0.75
+    updatemenu[0]['active']=0
+
+    updatemenu[1]['buttons']=buttons2
+    updatemenu[1]['y']=0.3
+    updatemenu[1]['active']=1
+
+    # add dropdown menus to the figure
+    fig.update_layout(showlegend=False, updatemenus=updatemenu,
+            yaxis_range=[0,5])
+
+    # add notations to the dropdown menus
+    fig.update_layout(
+        annotations=[
+            go.layout.Annotation(text="<b>Перший<br>університет</b>",
+                                x=-0.15, xref="paper",
+                                y=0.9, yref="paper",
+                                align="center", showarrow=False),
+            go.layout.Annotation(text="<b>Другий<br>університет</b>",
+                                x=-0.15, xref="paper", y=0.4,
+                                yref="paper", showarrow=False),
+                    ],
+
+        yaxis=dict(
+            linecolor='black',
+            gridcolor='black',
+            tickfont = dict(
+                size=20,
+                color="black"
+            ),
+            title_font=dict(
+                size=20,
+                color="black"
+            )
+        ),
+        showlegend=True
+    #     plot_bgcolor='rgba(0,0,0,0)',
+    )
+
+    return plot(fig, output_type="div", include_plotlyjs="cdn", show_link=False, config={
+            'displayModeBar': False
+        })
 
 if __name__ == "__main__":
     if False:
@@ -271,7 +381,7 @@ if __name__ == "__main__":
         df = pd.DataFrame(5*np.random.rand(3, 4), columns=['Пунктуальність', 'Об\'єктивність оцінювання', 'Ввічливість викладача', 'Володіння матеріалом'],
                     index=['Uni1', 'Uni2', 'Uni3'])
         div = get_all_universities_statistics(df)
-    elif True:
+    elif False:
         # test get_teacher_plot
         responses = []
         for i in range(10):
@@ -279,6 +389,12 @@ if __name__ == "__main__":
             evaluation = {char: random.randint(1, 6) for char in chars}
             responses.append(Response(2, random.randint(1, 10**6), evaluation))
         div = get_teacher_plot(responses, 'polar')
+    elif True:
+        # test get_universities_comparison
+        df = pd.DataFrame(5*np.random.rand(3, 4), columns=['Пунктуальність', 'Об\'єктивність оцінювання', 'Ввічливість викладача', 'Володіння матеріалом'],
+                  index=['Uni1', 'Uni2', 'Uni3'])
+        div = get_universities_comparison(df)
+
 
     with open("test_plots.html", 'w') as f:
         f.write(div)
