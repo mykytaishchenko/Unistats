@@ -369,6 +369,67 @@ def get_universities_comparison(df : pd.DataFrame) -> str:
             'displayModeBar': False
         })
 
+
+def get_universities_table(data: Dict[str, int]) -> str:
+    style = """<style>
+    .styled-table {
+        border-collapse: collapse;
+        margin: 25px 0;
+        font-size: 1.5em;
+        font-family: sans-serif;
+        min-width: 400px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .styled-table thead tr {
+        background-color: #535ba0;
+        color: #ffffff;
+        text-align: left;
+    }
+
+    .styled-table th,
+    .styled-table td {
+        padding: 12px 15px;
+    }
+
+    .styled-table tbody tr {
+        border-bottom: 1px solid #dddddd;
+    }
+
+    .styled-table tbody tr:nth-of-type(even) {
+        background-color: #f3f3f3;
+    }
+
+    .styled-table tbody tr:last-of-type {
+        border-bottom: 2px solid #535ba0;
+    }
+
+    .styled-table tbody tr.active-row {
+        font-weight: bold;
+        color: #009879;
+    }
+    </style>
+    """
+
+    thead = """
+    <thead>
+        <tr>
+            <th>Університет</th>
+            <th>Рейтинг</th>
+        </tr>
+    </thead>
+    """
+    tbody = "<tbody>"
+    for char, mark in data.items():
+        tbody += f"""<tr>
+            <td>{char}</td>
+            <td>{mark:.2f}</td>
+        </tr>"""
+    tbody += "</tbody>"
+
+    return style + '<table class="styled-table">' + thead + tbody + "</table>"
+
+
 if __name__ == "__main__":
     if False:
         # test generate_horizontal_plot
@@ -389,12 +450,15 @@ if __name__ == "__main__":
             evaluation = {char: random.randint(1, 6) for char in chars}
             responses.append(Response(2, random.randint(1, 10**6), evaluation))
         div = get_teacher_plot(responses, 'polar')
-    elif True:
+    elif False:
         # test get_universities_comparison
         df = pd.DataFrame(5*np.random.rand(3, 4), columns=['Пунктуальність', 'Об\'єктивність оцінювання', 'Ввічливість викладача', 'Володіння матеріалом'],
                   index=['Uni1', 'Uni2', 'Uni3'])
         div = get_universities_comparison(df)
-
+    elif True:
+        universities = ["UCU", "DSA", "National University of Ivan Franko", "НАУКМА"]
+        aver_evaluations = {uni: random.random()*5 for uni in universities}
+        div = get_universities_table(aver_evaluations)
 
     with open("test_plots.html", 'w') as f:
         f.write(div)
