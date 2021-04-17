@@ -125,8 +125,9 @@ class DBConnection:
                     "FROM universities "
                     "WHERE domain = %s",
                     (domain,))
-                unv_id = cursor.fetchone()[0]
-        return unv_id
+                unv_id = cursor.fetchone()
+        if unv_id:
+            return unv_id[0]
 
     def generate_id(self, prefix):
         now = datetime.now()
