@@ -247,6 +247,12 @@ class DBConnection:
         teachers = [position.teacher for position in positions]
         return teachers
 
+    def get_teacher_by_id(self, teacher_id):
+        teachers = self.get_all_teachers()
+        for teacher in teachers:
+            if teacher.teacher_id == teacher_id:
+                return teacher
+
     def get_universities_average_characteristics(self):
         with self._connection:
             with self._connection.cursor() as cursor:
@@ -347,7 +353,7 @@ if __name__ == "__main__":
     # all_ps = connection.get_all_positions()
     # print([p.__dict__ for p in all_ps])
 
-    chs = connection.get_universities_average_characteristics()
-    print(chs)
+    tec = connection.get_teacher_by_id('tec-16185-0pr6lt-99216')
+    print(tec.name)
 
     connection.close_connection()
