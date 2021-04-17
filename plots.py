@@ -118,12 +118,33 @@ def generate_polar_plot(data: Dict[str, int]) -> str:
         fill="toself",
         fillcolor="black",
         line=dict(color="green", width=5),
-        opacity=0.7
-    )
-    layout = go.Layout(
+        opacity=0.7,
 
     )
-    fig = go.Figure(data=[trace], layout=layout)
+    fig = go.Figure(data=[trace])
+    fig.update_layout(
+        
+        plot_bgcolor='rgba(0,0,255,255)',
+        polar = dict(
+            bgcolor = "rgb(223, 223, 223)",
+            radialaxis = dict(
+                side = "counterclockwise",
+                showline = True,
+                linewidth = 2,
+                gridcolor = "white",
+                gridwidth = 2,
+                tickfont=dict(size=15, color="black", family="Arial")
+            ),
+            angularaxis = dict(
+                showline = True,
+                linewidth = 2,
+                gridcolor = "white",
+                gridwidth = 2,
+                tickfont=dict(size=15, color="black", family="Arial")
+            )
+        ),
+        
+    ),
 
     return plot(fig, output_type="div", include_plotlyjs="cdn", show_link=False, config={
         'displayModeBar': False
@@ -138,7 +159,10 @@ def get_teacher_plot(responses: List[Response], plot_type: str):
     plot_type : str
         should be one of "vertical", "horizontal", "polar"
     """
-    assert len(responses) >= 1, "Length of responses should be greater than 0"
+    if len(responses) < 1:
+        return  plot(go.Figure(), output_type="div", include_plotlyjs="cdn", show_link=False, config={
+        'displayModeBar': False
+    })
     average = {char: 0 for char in responses[0].characteristics.keys()}
     for response in responses:
         for char in response.characteristics:
@@ -156,7 +180,6 @@ def get_teacher_plot(responses: List[Response], plot_type: str):
     else:
         raise ValueError(f'Invalid argument for plot_type: \"{plot_type}\". Should be either\
  "vertical", "horizontal" or "polar"')
-
 
 
 def get_all_universities_statistics(df: pd.DataFrame) -> str:
@@ -226,7 +249,10 @@ def get_all_universities_statistics(df: pd.DataFrame) -> str:
                 color="black"
             )
         ),
+        showlegend=False,
+        plot_bgcolor='rgba(0,0,0,0)', 
         yaxis_range=[0,5],
+        barmode="group"
     #     legend_font=dict(size=20),
     #     legend_title_font=dict(size=20),
     #     title_font=dict(size=20, color="black")
@@ -236,29 +262,27 @@ def get_all_universities_statistics(df: pd.DataFrame) -> str:
     button1 = dict(method= 'update',
                 label='group',
                 args=[
-                        {'textangle': 90,}, #dict for fig.data[0] updates
+                        {'textangle': 90}, #dict for fig.data[0] updates
                     {"barmode": 'group'} #update layout attribute   
                     ])
 
     button2 = dict(method= 'update',
                 label='stack',
                 args=[
-                    {'textangle': 0, },
+                    {'textangle': 0},
                     {"barmode": 'stack'} #update layout attribute    
             ])
 
-    fig.update_layout(
-        updatemenus=[
-            dict(
-                active=0,
-                buttons= [button1, button2]
-                )
-        ],
-        plot_bgcolor='rgba(0,0,0,0)', 
-        showlegend=False
-    )
+    # fig.update_layout(
+    #     updatemenus=[
+    #         dict(
+    #             active=0,
+    #             buttons= [button1, button2]
+    #             )
+    #     ],
+    #     
+    # )
 
-    fig.update_layout(barmode="group")
     return plot(fig, output_type="div", include_plotlyjs="cdn", show_link=False, config={
         'displayModeBar': False
     })
@@ -453,7 +477,7 @@ if __name__ == "__main__":
                     "Компетентність": 3.5351,
                     "Рівень професійно-педагогічної підготовки": 5.0,
                     })
-    elif False:
+    elif True:
         # test get_all_universities_statistics
         df = pd.DataFrame(5*np.random.rand(3, 4), columns=['Пунктуальність', 'Об\'єктивність оцінювання', 'Ввічливість викладача', 'Володіння матеріалом'],
                     index=['Uni1', 'Uni2', 'Uni3'])
@@ -461,7 +485,7 @@ if __name__ == "__main__":
     elif False:
         # test get_teacher_plot
         responses = []
-        for i in range(10):
+        for i in range(1):
             chars = ['general', 'sufficiency', 'relevance', 'loyalty', 'politeness', 'material', 'punctuality', 'objectivity', 'adaptation', 'complexity']
             evaluation = {char: random.randint(1, 6) for char in chars}
             responses.append(Response(2, random.randint(1, 10**6), evaluation))
@@ -471,14 +495,14 @@ if __name__ == "__main__":
         df = pd.DataFrame(5*np.random.rand(3, 4), columns=['Пунктуальність', 'Об\'єктивність оцінювання', 'Ввічливість викладача', 'Володіння матеріалом'],
                   index=['Uni1', 'Uni2', 'Uni3'])
         div = get_universities_comparison(df)
-    elif True:
+    elif False:
         universities = ["UCU", "DSA", "National University of Ivan Franko", "НАУКМА"]
         aver_evaluations = {uni: random.random()*5 for uni in universities}
         div = get_universities_table(aver_evaluations)
 
     with open("test_plots.html", 'w') as f:
         # df = pd.DataFrame.from_dict(, orient='index')
-        div = get_universities_comparison({"Національний університет 'Києво-Могилянська академія'": {'politeness': 2.0, 'complexity': 5.0, 'material': 4.0, 'loyalty': 5.0, 'adaptation': 3.0, 'relevance': 5.0, 'general': 5.0, 'objectivity': 4.0, 'sufficiency': 4.0, 'punctuality': 4.0}, 'Український Католицький Університет': {'complexity': 3.83, 'objectivity': 3.25, 'politeness': 3.25, 'punctuality': 3.33, 'adaptation': 3.33, 'sufficiency': 3.25, 'loyalty': 3.75, 'relevance': 3.58, 'general': 3.42, 'material': 3.58}})
+        # div = get_universities_comparison({"Національний університет 'Києво-Могилянська академія'": {'politeness': 2.0, 'complexity': 5.0, 'material': 4.0, 'loyalty': 5.0, 'adaptation': 3.0, 'relevance': 5.0, 'general': 5.0, 'objectivity': 4.0, 'sufficiency': 4.0, 'punctuality': 4.0}, 'Український Католицький Університет': {'complexity': 3.83, 'objectivity': 3.25, 'politeness': 3.25, 'punctuality': 3.33, 'adaptation': 3.33, 'sufficiency': 3.25, 'loyalty': 3.75, 'relevance': 3.58, 'general': 3.42, 'material': 3.58}})
         f.write(div)
 
     # div = pd.DataFrame.from_dict({"Національний університет 'Києво-Могилянська академія'": {'politeness': 2.0, 'complexity': 5.0, 'material': 4.0, 'loyalty': 5.0, 'adaptation': 3.0, 'relevance': 5.0, 'general': 5.0, 'objectivity': 4.0, 'sufficiency': 4.0, 'punctuality': 4.0}, 'Український Католицький Університет': {'complexity': 3.83, 'objectivity': 3.25, 'politeness': 3.25, 'punctuality': 3.33, 'adaptation': 3.33, 'sufficiency': 3.25, 'loyalty': 3.75, 'relevance': 3.58, 'general': 3.42, 'material': 3.58}}, orient='index')
