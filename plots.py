@@ -5,6 +5,7 @@ Module for visualizations.
 """
 
 from typing import Dict, List
+import random
 
 import plotly.express as px
 import plotly.graph_objects as go
@@ -13,6 +14,7 @@ import matplotlib
 import matplotlib.cm as cm
 import pandas as pd
 import numpy as np
+
 from models import Response
 
 
@@ -136,7 +138,7 @@ def get_teacher_plot(responses: List[Response], plot_type: str):
     assert len(responses) >= 1, "Length of responses should be greater than 0"
     average = {char: 0 for char in responses[0].characteristics.keys()}
     for response in responses:
-        for char in response.characteristic:
+        for char in response.characteristics:
             average[char] += response.characteristics[char]
 
     for char in average:
@@ -145,9 +147,9 @@ def get_teacher_plot(responses: List[Response], plot_type: str):
     if plot_type == "vertical":
         return generate_vertical_plot(average)
     elif plot_type == "horizontal":
-        return generate_vertical_plot(average)
+        return generate_horizontal_plot(average)
     elif plot_type == "polar":
-        return generate_vertical_plot(average)
+        return generate_polar_plot(average)
     else:
         raise ValueError(f'Invalid argument for plot_type: \"{plot_type}\". Should be either\
  "vertical", "horizontal" or "polar"')
@@ -269,16 +271,17 @@ if __name__ == "__main__":
         df = pd.DataFrame(5*np.random.rand(3, 4), columns=['Пунктуальність', 'Об\'єктивність оцінювання', 'Ввічливість викладача', 'Володіння матеріалом'],
                     index=['Uni1', 'Uni2', 'Uni3'])
         div = get_all_universities_statistics(df)
-    elif: True:
-        pass
-
+    elif True:
+        # test get_teacher_plot
+        responses = []
+        for i in range(10):
+            chars = ['general', 'sufficiency', 'relevance', 'loyalty', 'politeness', 'material', 'punctuality', 'objectivity', 'adaptation', 'complexity']
+            evaluation = {char: random.randint(1, 6) for char in chars}
+            responses.append(Response(2, random.randint(1, 10**6), evaluation))
+        div = get_teacher_plot(responses, 'polar')
 
     with open("test_plots.html", 'w') as f:
         f.write(div)
-
-    # test get_teacher_plot
-    responses = [Response(1, 2)]
-
 
     import database
     print(database.DBConnection().get_responses_by_position_id('pos-16185-0WJIl5-99238')) # why it doesn't work?
