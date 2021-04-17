@@ -65,7 +65,7 @@ def data_base():
 
 def data_lectures():
     db.open_connection()
-    teachers = db.get_all_position()
+    teachers = db.get_all_lectures()
     db.close_connection()
     lecturers_data = ObjectForJson()
     lecturers_data.teachers = teachers

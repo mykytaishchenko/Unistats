@@ -353,7 +353,7 @@ if __name__ == "__main__":
     # all_ps = connection.get_all_positions()
     # print([p.__dict__ for p in all_ps])
 
-    tec = connection.get_teacher_by_id('tec-16185-0pr6lt-99216')
-    print(tec.name)
+    tec = connection.get_position_by_position_id('pos-16185-0WJIl5-99238')
+    print(tec.teacher.photo_url)
 
     connection.close_connection()
