@@ -1,7 +1,10 @@
 import flask
+from flask import redirect
 from flask_login import LoginManager
+from auth import is_logged_in
 
 import auth
+import logic
 
 app = flask.Flask('__main__',
                   static_folder='./front/build/static',
@@ -28,12 +31,14 @@ def registration():
 
 @app.route('/profile')
 def profile():
-    data = 'Profile'
-    return flask.render_template('index.html', token=data)
+    if is_logged_in():
+        return flask.render_template('index.html', token=logic.data_profile())
+    return redirect('/')
 
 
 @app.route('/universities')
 def universities():
+    data = {}
     data = 'Universities'
     return flask.render_template('index.html', token=data)
 
@@ -78,6 +83,12 @@ def surveys():
 def plotly_graph(m_id):
     data = 'Media' + str(m_id)
     return flask.render_template('plotly_graph.html', token=data)
+
+
+@app.route('/unsuccessful_login')
+def unsuccessful_login():
+    data = 'unsuccessful_login'
+    return flask.render_template('index.html', token=data)
 
 
 if __name__ == "__main__":
