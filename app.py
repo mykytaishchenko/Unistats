@@ -19,8 +19,7 @@ login_manager = LoginManager(app)
 
 @app.route('/')
 def main():
-    data = 'Main page'
-    return flask.render_template('index.html', token=)
+    return flask.render_template('index.html', token=logic.data_base())
 
 
 @app.route('/registration')
