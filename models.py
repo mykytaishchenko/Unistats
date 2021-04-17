@@ -1,30 +1,55 @@
+# class Teacher:
+#     def __init__(self, teacher_id, name, photo_url):
+#         self.name = name
+#         self.photo_url = photo_url
+
 class Teacher:
-    def __init__(self, name, photo_url):
+    def __init__(self, teacher_id, name, photo_url):
+        self.teacher_id = teacher_id
         self.name = name
         self.photo_url = photo_url
 
-    def serialize(self):
-        return self.name, self.photo_url
+    # def serialize(self):
+    #     return self.name, self.photo_url
+
+# class Position:
+#     def __init__(self, position_id, university_id, faculty_id, course_id, teacher_id, teacher_name, teacher_photo):
+#         self.id = position_id
+#         self.university_id = university_id
+#         self.faculty_id = faculty_id
+#         self.course_id = course_id
+#         self.teacher_id = teacher_id
+#         self.teacher_name = teacher_name
+#         self.teacher_photo = teacher_photo
+
+class Position:
+    def __init__(self, position_id, university, faculty, course, teacher):
+        self.id = position_id
+        self.university = university
+        self.faculty = faculty
+        self.course = course
+        self.teacher = teacher
 
 class University:
-    def __init__(self, university_id, name, domain):
+    def __init__(self, university_id, name, domain, logotype_url):
         self.university_id = university_id
         self.name = name
         self.domain = domain
+        self.logotype = logotype_url
 
-class Position:
-    def __init__(self, position_id, university_id, faculty_id, course_id, teacher_id, teacher_name, teacher_photo):
-        self.id = position_id
-        self.university_id = university_id
-        self.faculty_id = faculty_id
-        self.course_id = course_id
-        self.teacher_id = teacher_id
-        self.teacher_name = teacher_name
-        self.teacher_photo = teacher_photo
+class Faculty:
+    def __init__(self, faculty_id, name):
+        self.id = faculty_id
+        self.name = name
 
-    def serialize(self):
-        return (self.university, self.faculty,
-                self.course, self.teacher)
+class Course:
+    def __init__(self, course_id, name):
+        self.id = course_id
+        self.name = name
+
+    # def serialize(self):
+    #     return (self.university, self.faculty,
+    #             self.course, self.teacher)
 
 
 class Characteristic:
@@ -55,8 +80,8 @@ class Student:
         self.mail = mail
         self.university_id = university_id
 
-    def serialize(self):
-        return self.name, self.mail, self.university
+    # def serialize(self):
+    #     return self.name, self.mail, self.university
 
 
 # class

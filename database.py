@@ -5,7 +5,7 @@ import string
 import psycopg2
 import pandas as pd
 from datetime import datetime
-from models import Student, Response, University, Position
+from models import Student, Response, University, Position, Faculty, Course, Teacher
 from random import choice as randchoice
 
 
@@ -77,8 +77,8 @@ class DBConnection:
                 data = cursor.fetchone()
                 student = None
                 if data:
-                    student_id, name, university = data
-                    student = Student(name, mail, university, student_id)
+                    student_id, name, university_id = data
+                    student = Student(name, mail, university_id, student_id)
         return student
 
     def save_response(self, response):
@@ -134,12 +134,12 @@ class DBConnection:
         with self._connection:
             with self._connection.cursor() as cursor:
                 cursor.execute(
-                    "SELECT id, name, domain "
+                    "SELECT id, name, domain, logotype "
                     "FROM universities")
                 objects = cursor.fetchall()
         universities = []
         for obj in objects:
-            university = University(obj[0], obj[1], obj[2])
+            university = University(*obj)
             universities.append(university)
         return universities
 
@@ -147,43 +147,73 @@ class DBConnection:
         with self._connection:
             with self._connection.cursor() as cursor:
                 cursor.execute(
-                    "SELECT id, name, domain "
+                    "SELECT id, name, domain, logotype "
                     "FROM universities "
                     "WHERE id = %s",
                     (university_id,))
                 obj = cursor.fetchone()
-        university = University(obj[0], obj[1], obj[2])
+        university = University(*obj)
         return university
 
     def get_teachers_by_university_id(self, university_id):
         with self._connection:
             with self._connection.cursor() as cursor:
                 cursor.execute(
-                    "SELECT positions.id, unv_id, fcl_id, cor_id, tec_id, teachers.name, photo "
+                    "SELECT positions.id, "
+                    "unv_id, universities.name, universities.domain, universities.logotype, "
+                    "fcl_id, faculties.name, "
+                    "cor_id, courses.name, "
+                    "tec_id, teachers.name, photo "
                     "FROM positions "
                     "LEFT JOIN teachers ON positions.tec_id = teachers.id "
-                    "WHERE unv_id = %s",
+                    "LEFT JOIN universities ON positions.unv_id = universities.id "
+                    "LEFT JOIN faculties ON positions.fcl_id = faculties.id "
+                    "LEFT JOIN courses ON positions.cor_id = courses.id "
+                    "WHERE universities.id = %s",
                     (university_id,))
                 objects = cursor.fetchall()
         positions = []
-        if objects is not None:
-            for obj in objects:
-                position = Position(*obj)
-                positions.append(position)
-            return positions
+
+        if objects is None:
+            return
+
+        for obj in objects:
+            position_id = obj[0]
+            university = University(*obj[1:5])
+            faculty = Faculty(*obj[5:7])
+            course = Course(*obj[7:9])
+            teacher = Teacher(*obj[9:12])
+            position = Position(position_id, university, faculty, course, teacher)
+            positions.append(position)
+
+        return positions
 
     def get_position_by_position_id(self, position_id):
         with self._connection:
             with self._connection.cursor() as cursor:
                 cursor.execute(
-                    "SELECT positions.id, unv_id, fcl_id, cor_id, tec_id, teachers.name, photo "
+                    "SELECT positions.id, "
+                    "unv_id, universities.name, universities.domain, universities.logotype, "
+                    "fcl_id, faculties.name, "
+                    "cor_id, courses.name, "
+                    "tec_id, teachers.name, photo "
                     "FROM positions "
                     "LEFT JOIN teachers ON positions.tec_id = teachers.id "
+                    "LEFT JOIN universities ON positions.unv_id = universities.id "
+                    "LEFT JOIN faculties ON positions.fcl_id = faculties.id "
+                    "LEFT JOIN courses ON positions.cor_id = courses.id "
                     "WHERE positions.id = %s",
                     (position_id,))
                 obj = cursor.fetchone()
-        if obj is not None:
-            return Position(*obj)
+        if object is None:
+            return
+        position_id = obj[0]
+        university = University(*obj[1:5])
+        faculty = Faculty(*obj[5:7])
+        course = Course(*obj[7:9])
+        teacher = Teacher(*obj[9:12])
+        position = Position(position_id, university, faculty, course, teacher)
+        return position
 
     def get_all_positions(self):
         with self._connection:
@@ -231,8 +261,8 @@ if __name__ == "__main__":
     # print(connection.get_students())
     # st = Student('Denis Kyznec1', 'test2@test.com', 'unv-16185-0rsESB-99209')
     # connection.register_student(st)
-    st = connection.get_student_by_mail('test1@test.com')
-    print(st.__dict__)
+    # st = connection.get_student_by_mail('test1@test.com')
+    # print(st.__dict__)
     std_ids = ['std-16186-MpiQ7X-06504', 'std-16186-pVYxDM-06575']
     pos_ids = ['pos-16185-0epVeI-99240', 'pos-16185-0WJIl5-99238']
     characteristics = {'general': 5,
@@ -256,20 +286,24 @@ if __name__ == "__main__":
     #     print('response saved')
     # chs = connection.get_responses_by_position_id('pos-16185-0WJIl5-99238')
     # print(list(map(str, chs)))
-    unv_id = connection.get_university_id_by_domain('ucu.edu.ua')
-    print(unv_id)
-    uns = connection.get_all_universities()
-    print([un.__dict__ for un in uns])
-    un = connection.get_university_by_id('unv-16185-0rsESB-99209')
-    print(un.__dict__)
-
-    ps = connection.get_teachers_by_university_id('unv-16185-0rsESB-99209')
-    print([p.__dict__ for p in ps])
+    # unv_id = connection.get_university_id_by_domain('ucu.edu.ua')
+    # print(unv_id)
+    # uns = connection.get_all_universities()
+    # print([un.__dict__ for un in uns])
+    # un = connection.get_university_by_id('unv-16185-0rsESB-99209')
+    # print(un.__dict__)
+    #
+    # ps = connection.get_teachers_by_university_id('unv-16185-0rsESB-99209')
+    # print([p.__dict__ for p in ps])
 
     one_pos = connection.get_position_by_position_id('pos-16185-e4LFqt-99219')
-    print(one_pos.__dict__)
+    for key in one_pos.__dict__:
+        try:
+            print(one_pos.__dict__[key].__dict__)
+        except:
+            pass
 
-    all_ps = connection.get_all_positions()
-    print([p.__dict__ for p in ps])
+    # all_ps = connection.get_all_positions()
+    # print([p.__dict__ for p in all_ps])
 
     connection.close_connection()
