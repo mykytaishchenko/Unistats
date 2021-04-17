@@ -139,6 +139,9 @@ def get_teacher_plot(responses: List[Response], plot_type: str):
         for char in response.characteristic:
             average[char] += response.characteristics[char]
 
+    for char in average:
+        average[char] /= len(responses)
+
     if plot_type == "vertical":
         return generate_vertical_plot(average)
     elif plot_type == "horizontal":
@@ -255,24 +258,26 @@ def get_all_universities_statistics(df: pd.DataFrame) -> str:
 
 
 if __name__ == "__main__":
-    if True:
+    if False:
         # test generate_horizontal_plot
         div = generate_horizontal_plot({"Лояльність": 2.432,
                     "Компетентність": 3.5351,
                     "Рівень професійно-педагогічної підготовки": 5.0,
                     })
-    else:
+    elif False:
         # test get_all_universities_statistics
         df = pd.DataFrame(5*np.random.rand(3, 4), columns=['Пунктуальність', 'Об\'єктивність оцінювання', 'Ввічливість викладача', 'Володіння матеріалом'],
                     index=['Uni1', 'Uni2', 'Uni3'])
         div = get_all_universities_statistics(df)
+    elif: True:
+        pass
+
 
     with open("test_plots.html", 'w') as f:
         f.write(div)
 
     # test get_teacher_plot
-    # responses = [Response(1, 2)]
-    # get_teacher_plot()
+    responses = [Response(1, 2)]
 
 
     import database
