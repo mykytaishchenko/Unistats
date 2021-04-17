@@ -65,10 +65,10 @@ def data_base():
 
 def data_lectures():
     db.open_connection()
-    positions = db.get_all_positions()
+    teachers = db.get_all_teachers()
     db.close_connection()
     lecturers_data = ObjectForJson()
-    lecturers_data.positions = positions
+    lecturers_data.teachers = teachers
     return json.dumps(lecturers_data, cls=ObjectEncoder, ensure_ascii=False)
 
 
