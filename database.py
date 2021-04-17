@@ -155,7 +155,7 @@ class DBConnection:
         university = University(*obj)
         return university
 
-    def get_teachers_by_university_id(self, university_id):
+    def get_positions_by_university_id(self, university_id):
         with self._connection:
             with self._connection.cursor() as cursor:
                 cursor.execute(
@@ -241,6 +241,11 @@ class DBConnection:
                 position = Position(position_id, university, faculty, course, teacher)
                 positions.append(position)
             return positions
+
+    def get_all_teachers(self):
+        positions = self.get_all_positions()
+        teachers = [position.teacher for position in positions]
+        return teachers
 
     def generate_id(self, prefix):
         now = datetime.now()
