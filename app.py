@@ -70,7 +70,7 @@ def surveys():
 
 @app.route('/media/<m_id>')
 def plotly_graph(m_id):
-    return flask.render_template('plotly_graph.html')
+    return flask.render_template('/plots/landing1.html')
 
 
 @app.route('/unsuccessful_login')
