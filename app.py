@@ -5,10 +5,11 @@ from auth import is_logged_in
 
 import auth
 import logic
+import pathlib
 
 app = flask.Flask('__main__',
-                  static_folder='./front/build/static',
-                  template_folder='./front/build')
+                  static_folder=str(pathlib.Path.cwd() / 'front/build/static'),
+                  template_folder=str(pathlib.Path.cwd() / 'front/build'))
 app.config['SESSION_COOKIE_NAME'] = 'google-login-session'
 app.secret_key = "something_secret"
 
