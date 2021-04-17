@@ -1356,11 +1356,10 @@ section.buttons .container-fluid {
 }
 
 .profile{
-    margin-top:40px;
     width:50%;
     padding:10px;
     border:2px solid rgba(83,91,160,0.25);
-    margin:0px auto;
+    margin:70px auto;
     text-align: left;
 }
 
