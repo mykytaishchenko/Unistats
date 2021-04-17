@@ -1,8 +1,11 @@
 import functools
+from database import connection as db
 
 from config import Config
+from models import Student
 
 import flask
+from flask import redirect
 
 from authlib.client import OAuth2Session
 import google.oauth2.credentials
@@ -67,6 +70,8 @@ def no_cache(view):
 @app.route('/login')
 @no_cache
 def login():
+    if is_logged_in():
+        return redirect(BASE_URI)
     session = OAuth2Session(CLIENT_ID, CLIENT_SECRET,
                             scope=AUTHORIZATION_SCOPE,
                             redirect_uri=AUTH_REDIRECT_URI)
@@ -99,6 +104,20 @@ def google_auth_redirect():
 
     flask.session[AUTH_TOKEN_KEY] = oauth2_tokens
 
+    db.open_connection()
+    user_info = get_user_info()
+
+    university_id = db.get_university_id_by_domain(user_info["email"][user_info["email"].rfind("@")+1:])
+    if university_id is None:
+        db.close_connection()
+        flask.session.pop(AUTH_TOKEN_KEY, None)
+        flask.session.pop(AUTH_STATE_KEY, None)
+        return "Вибачте, але ваша пошта не належить до жодного університету у нашій базі."
+
+    if db.get_student_by_mail(user_info["email"]) is None:
+        db.register_student(Student(user_info["name"], user_info["email"], university_id))
+        print("Added new student.")
+    db.close_connection()
     return flask.redirect(BASE_URI, code=302)
 
 

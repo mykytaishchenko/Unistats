@@ -1,5 +1,4 @@
 aiofiles==0.6.0
-Authlib==0.11
 beautifulsoup4==4.9.3
 blinker==1.4
 cachetools==4.2.1
@@ -9,7 +8,6 @@ chardet==4.0.0
 click==7.1.2
 cryptography==3.4.7
 Flask==1.1.2
-Flask-GoogleAuth==0.4.2
 Flask-Login==0.2.11
 Flask-OAuth==0.12
 google==3.0.0
