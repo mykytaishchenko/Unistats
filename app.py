@@ -38,9 +38,7 @@ def profile():
 
 @app.route('/universities')
 def universities():
-    data = {}
-    data = 'Universities'
-    return flask.render_template('index.html', token=data)
+    return flask.render_template('index.html', token=logic.data_universities())
 
 
 @app.route('/lecturers')
