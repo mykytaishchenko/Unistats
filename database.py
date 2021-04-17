@@ -5,7 +5,7 @@ import string
 import psycopg2
 import pandas as pd
 from datetime import datetime
-from models import Student, Response
+from models import Student, Response, University
 from random import choice as randchoice
 
 
@@ -130,6 +130,19 @@ class DBConnection:
         if unv_id:
             return unv_id[0]
 
+    def get_all_universities(self):
+        with self._connection:
+            with self._connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT id, name, domain "
+                    "FROM universities")
+                objects = cursor.fetchall()
+        universities = []
+        for obj in objects:
+            university = University(obj[0], obj[1], obj[2])
+            universities.append(university)
+        return universities
+
     def generate_id(self, prefix):
         now = datetime.now()
         timestamp = str(round(datetime.timestamp(now)))
@@ -159,8 +172,8 @@ if __name__ == "__main__":
     connection.open_connection()
     # print(connection.generate_id("usr"))
     # print(connection.get_students())
-    st = Student('Denis Kyznec1', 'test2@test.com', 'unv-16185-0rsESB-99209')
-    connection.register_student(st)
+    # st = Student('Denis Kyznec1', 'test2@test.com', 'unv-16185-0rsESB-99209')
+    # connection.register_student(st)
     # st = connection.get_student_by_mail('test123@test.com')
     # print(st)
     std_ids = ['std-16186-MpiQ7X-06504', 'std-16186-pVYxDM-06575']
@@ -188,4 +201,6 @@ if __name__ == "__main__":
     # print(list(map(str, chs)))
     unv_id = connection.get_university_id_by_domain('ucu.edu.ua')
     print(unv_id)
+    uns = connection.get_all_universities()
+    print([un.__dict__ for un in uns])
     connection.close_connection()

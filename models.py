@@ -6,7 +6,11 @@ class Teacher:
     def serialize(self):
         return self.name, self.photo_url
 
-
+class University:
+    def __init__(self, university_id, name, domain):
+        self.university_id = university_id
+        self.name = name
+        self.domain = domain
 
 class Position:
     def __init__(self, university, faculty, course, teacher):
