@@ -143,6 +143,18 @@ class DBConnection:
             universities.append(university)
         return universities
 
+    def get_university_by_id(self, university_id):
+        with self._connection:
+            with self._connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT id, name, domain "
+                    "FROM universities "
+                    "WHERE id = %s",
+                    (university_id,))
+                obj = cursor.fetchone()
+        university = University(obj[0], obj[1], obj[2])
+        return university
+
     def generate_id(self, prefix):
         now = datetime.now()
         timestamp = str(round(datetime.timestamp(now)))
@@ -203,4 +215,6 @@ if __name__ == "__main__":
     print(unv_id)
     uns = connection.get_all_universities()
     print([un.__dict__ for un in uns])
+    un = connection.get_university_by_id('unv-16185-0rsESB-99209')
+    print(un.__dict__)
     connection.close_connection()
