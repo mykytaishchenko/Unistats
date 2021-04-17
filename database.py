@@ -293,10 +293,10 @@ if __name__ == "__main__":
     # un = connection.get_university_by_id('unv-16185-0rsESB-99209')
     # print(un.__dict__)
     #
-    # ps = connection.get_teachers_by_university_id('unv-16185-0rsESB-99209')
-    # print([p.__dict__ for p in ps])
+    ps = connection.get_teachers_by_university_id('unv-16185-0rsESB-99209')
+    one_pos = ps[10]
 
-    one_pos = connection.get_position_by_position_id('pos-16185-e4LFqt-99219')
+    # one_pos = connection.get_position_by_position_id('pos-16185-e4LFqt-99219')
     for key in one_pos.__dict__:
         try:
             print(one_pos.__dict__[key].__dict__)

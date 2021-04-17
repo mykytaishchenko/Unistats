@@ -23,12 +23,6 @@ def main():
     return flask.render_template('index.html', token=logic.data_base())
 
 
-@app.route('/registration')
-def registration():
-    data = 'Registration'
-    return flask.render_template('index.html', token=data)
-
-
 @app.route('/profile')
 def profile():
     if is_logged_in():
@@ -43,50 +37,45 @@ def universities():
 
 @app.route('/lecturers')
 def lecturers():
-    data = 'Lecturers'
-    return flask.render_template('index.html', token=data)
+    return flask.render_template('index.html')
 
 
 @app.route('/university_<m_id>')
 def university(m_id):
-    data = 'Universities'
-    return flask.render_template('index.html', token=data)
+    university_id = 'unv-16185-0rsESB-99209'
+    return flask.render_template('index.html', token=logic.data_university(university_id))
 
 
 @app.route('/lecturer_<m_id>')
 def lecturer(m_id):
-    data = 'Lecturers'
-    return flask.render_template('index.html', token=data)
+    print(m_id)
+    logic.generate_plot(m_id)
+    return flask.render_template('index.html', token=logic.data_position(m_id))
 
 
 @app.route('/lecturersurvey_<m_id>')
 def lecturer_survey(m_id):
-    data = 'Login'
-    return flask.render_template('index.html', token=data)
+    return flask.render_template('index.html')
 
 
 @app.route('/survey_<m_id>')
 def survey(m_id):
-    data = 'Universities'
-    return flask.render_template('index.html', token=data)
+    return flask.render_template('index.html')
 
 
 @app.route('/surveys')
 def surveys():
-    data = 'Lecturers'
-    return flask.render_template('index.html', token=data)
+    return flask.render_template('index.html')
 
 
 @app.route('/media/<m_id>')
 def plotly_graph(m_id):
-    data = 'Media' + str(m_id)
-    return flask.render_template('plotly_graph.html', token=data)
+    return flask.render_template('plotly_graph.html')
 
 
 @app.route('/unsuccessful_login')
 def unsuccessful_login():
-    data = 'unsuccessful_login'
-    return flask.render_template('index.html', token=data)
+    return flask.render_template('index.html')
 
 
 if __name__ == "__main__":
