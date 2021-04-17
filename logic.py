@@ -46,7 +46,7 @@ def data_profile():
     data = {"is_logged": is_logged_in(),
             "student": {"first_name": user["given_name"], "second_name": user["family_name"],
                         "mail": user["email"], "university": university.name}}
-    return json.dumps(data)
+    return json.dumps(data, ensure_ascii=False)
 
 
 def data_universities():
@@ -55,21 +55,21 @@ def data_universities():
     db.close_connection()
     data = {"is_logged": is_logged_in(),
             "universities": [university.name for university in universities]}
-    return json.dumps(data)
+    return json.dumps(data, ensure_ascii=False)
 
 
 def data_base():
     data = {"is_logged": is_logged_in()}
-    return json.dumps(data)
+    return json.dumps(data, ensure_ascii=False)
 
 
 def data_lectures():
     db.open_connection()
-    positions = db.get_all_universities()
+    teachers = db.get_all_teachers()
     db.close_connection()
     lecturers_data = ObjectForJson()
-    lecturers_data.positions = positions
-    return json.dumps(lecturers_data, cls=ObjectEncoder)
+    lecturers_data.teachers = teachers
+    return json.dumps(lecturers_data, cls=ObjectEncoder, ensure_ascii=False)
 
 
     # data = {"is_logged": is_logged_in(),
@@ -88,7 +88,7 @@ def data_university(university_id):
     db.close_connection()
     university_data = ObjectForJson()
     university_data.university = university
-    return json.dumps(university_data, cls=ObjectEncoder)
+    return json.dumps(university_data, cls=ObjectEncoder, ensure_ascii=False)
 
 # class PositionData(ObjectForJson):
 #     def __init__(self, position):
@@ -108,7 +108,7 @@ def data_position(position_id):
     position_data = ObjectForJson()
     position_data.position = position
     position_data.plot = plots.get_teacher_plot(responses, "polar")
-    return json.dumps(position_data, cls=ObjectEncoder)
+    return json.dumps(position_data, cls=ObjectEncoder, ensure_ascii=False)
 
 def generate_plot(position_id):
     # db.open_connection()
@@ -123,7 +123,7 @@ def generate_plot(position_id):
 
 
 if __name__ == "__main__":
-    pos_json = data_position('pos-16185-0epVeI-99240')
+    pos_json = data_lectures() # data_position('pos-16185-0epVeI-99240')
     print(pos_json)
 
     # test_obj = ObjectForJson()
