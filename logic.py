@@ -53,9 +53,9 @@ def data_universities():
     db.open_connection()
     universities = db.get_all_universities()
     db.close_connection()
-    data = {"is_logged": is_logged_in(),
-            "universities": [university.name for university in universities]}
-    return json.dumps(data, ensure_ascii=False)
+    universities_data = ObjectForJson()
+    universities_data.universities = universities
+    return json.dumps(universities_data, cls=ObjectEncoder, ensure_ascii=False)
 
 
 def data_base():
@@ -120,6 +120,7 @@ def generate_plot(position_id):
     # #     f.write(plot_html)
     # return plot_html
     pass
+
 
 
 if __name__ == "__main__":
