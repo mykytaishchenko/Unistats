@@ -106,25 +106,28 @@ def data_position(position_id):
     #         "position": position.to_json()
     #         }
     position_data = ObjectForJson()
-    position_data.position = position
-    position_data.plot = plots.get_teacher_plot(responses, "polar")
+    teacher = position.teacher
+    teacher.university = position.university.name
+    teacher.faculty = position.faculty.name
+    teacher.course = position.course.name
+    position_data.teacher = teacher
+    # position_data.plot = plots.get_teacher_plot(responses, "polar")
+    generate_plot(position_id)
     return json.dumps(position_data, cls=ObjectEncoder, ensure_ascii=False)
 
 def generate_plot(position_id):
-    # db.open_connection()
-    # responses = db.get_responses_by_position_id(position_id)
-    # db.close_connection()
-    # print(responses[0])
-    # plot_html = plots.get_teacher_plot(responses, "polar")
-    # # with open(template_folder + f"/{position_id}_plot.html", 'w') as f:
-    # #     f.write(plot_html)
-    # return plot_html
-    pass
+    db.open_connection()
+    responses = db.get_responses_by_position_id(position_id)
+    db.close_connection()
+    print(responses[0])
+    plot_html = plots.get_teacher_plot(responses, "polar")
+    with open(template_folder + f"/{position_id}_plot.html", 'w') as f:
+        f.write(plot_html)
 
 
 
 if __name__ == "__main__":
-    pos_json = data_lectures() # data_position('pos-16185-0epVeI-99240')
+    pos_json = data_position('pos-16185-0epVeI-99240')
     print(pos_json)
 
     # test_obj = ObjectForJson()
