@@ -90,6 +90,7 @@ def data_university(university_id):
 def data_position(position_id):
     db.open_connection()
     position = db.get_position_by_position_id(position_id)
+    responses = db.get_responses_by_position_id(position_id)
     db.close_connection()
     # data = {# "is_logged": is_logged_in(),
     #         # "position": {'id': position.id, *{attr.__dict__: for key, attr in position.__dict__.items() if key != "id"}}
@@ -98,27 +99,30 @@ def data_position(position_id):
     #         }
     position_data = ObjectForJson()
     position_data.position = position
+    position_data.plot = plots.get_teacher_plot(responses, "polar")
     return json.dumps(position_data, cls=ObjectEncoder)
 
 def generate_plot(position_id):
-    db.open_connection()
-    responses = db.get_responses_by_position_id(position_id)
-    db.close_connection()
-    print(responses[0])
-    plot_html = plots.get_teacher_plot(responses, "polar")
-    with open(template_folder + f"/{position_id}_plot.html", 'w') as f:
-        f.write(plot_html)
+    # db.open_connection()
+    # responses = db.get_responses_by_position_id(position_id)
+    # db.close_connection()
+    # print(responses[0])
+    # plot_html = plots.get_teacher_plot(responses, "polar")
+    # # with open(template_folder + f"/{position_id}_plot.html", 'w') as f:
+    # #     f.write(plot_html)
+    # return plot_html
+    pass
 
 
 if __name__ == "__main__":
-    # pos_json = data_position('pos-16185-0epVeI-99240')
-    # print(pos_json)
+    pos_json = data_position('pos-16185-0epVeI-99240')
+    print(pos_json)
 
     # test_obj = ObjectForJson()
     # test_obj.json = 7
     # print(json.dumps(test_obj, cls=ObjectEncoder))
 
-    db.open_connection()
-    responses = db.get_responses_by_position_id('pos-16185-0epVeI-99240')
-    db.close_connection()
-    print(responses[0])
+    # db.open_connection()
+    # responses = db.get_responses_by_position_id('pos-16185-0epVeI-99240')
+    # db.close_connection()
+    # print(responses[0])
