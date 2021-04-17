@@ -49,7 +49,7 @@ def university(m_id):
 
 @app.route('/lecturer_<m_id>')
 def lecturer(m_id):
-    logic.generate_plot(m_id)
+    #logic.generate_plot(m_id)
     return flask.render_template('index.html', token=logic.data_position(m_id))
 
 
