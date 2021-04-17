@@ -64,10 +64,18 @@ def data_base():
 
 
 def data_lectures():
-    data = {"is_logged": is_logged_in(),
-            "teachers": [{"name": teacher.teacher_name, "photo": teacher.teacher_photo,
-                          "id": teacher.id} for teacher in db.get_all_positions()]}
-    return json.dumps(data)
+    db.open_connection()
+    positions = db.get_all_universities()
+    db.close_connection()
+    lecturers_data = ObjectForJson()
+    lecturers_data.positions = positions
+    return json.dumps(lecturers_data, cls=ObjectEncoder)
+
+
+    # data = {"is_logged": is_logged_in(),
+    #         "teachers": [{"name": teacher.teacher_name, "photo": teacher.teacher_photo,
+    #                       "id": teacher.id} for teacher in db.get_all_positions()]}
+    # return json.dumps(data)
 
 # class DataUniversity(ObjectForJson):
 #     def __init__(self, university):
