@@ -371,6 +371,13 @@ def get_universities_comparison(df : pd.DataFrame) -> str:
 
 
 def get_universities_table(data: Dict[str, int]) -> str:
+    """Return HTML code, that represents a table with ratings of universities.
+
+    Parameters
+    ----------
+    data : dict
+        dictionary where keys are names of univerities and values are their ratings.
+    """
     style = """<style>
     .styled-table {
         border-collapse: collapse;
