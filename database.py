@@ -113,7 +113,7 @@ class DBConnection:
                 characteristics_info = cursor.fetchall()
         responses = []
         for characteristics, std_id in characteristics_info:
-            characteristics = {ch.split(":")[0]: ch.split(":")[1] for ch in characteristics}
+            characteristics = {ch.split(":")[0]: int(ch.split(":")[1]) for ch in characteristics}
             response = Response(pos_id, std_id, characteristics)
             responses.append(response)
         return responses

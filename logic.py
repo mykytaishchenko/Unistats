@@ -104,15 +104,21 @@ def generate_plot(position_id):
     db.open_connection()
     responses = db.get_responses_by_position_id(position_id)
     db.close_connection()
+    print(responses[0])
     plot_html = plots.get_teacher_plot(responses, "polar")
     with open(template_folder + f"/{position_id}_plot.html", 'w') as f:
         f.write(plot_html)
 
 
 if __name__ == "__main__":
-    pos_json = data_position('pos-16185-0epVeI-99240')
-    print(pos_json)
+    # pos_json = data_position('pos-16185-0epVeI-99240')
+    # print(pos_json)
 
     # test_obj = ObjectForJson()
     # test_obj.json = 7
     # print(json.dumps(test_obj, cls=ObjectEncoder))
+
+    db.open_connection()
+    responses = db.get_responses_by_position_id('pos-16185-0epVeI-99240')
+    db.close_connection()
+    print(responses[0])
