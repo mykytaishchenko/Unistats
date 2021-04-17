@@ -247,6 +247,27 @@ class DBConnection:
         teachers = [position.teacher for position in positions]
         return teachers
 
+    def get_universities_average_characteristics(self):
+        with self._connection:
+            with self._connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT UnvId, array_agg(CarName || ':' || CarMeanValue) "
+                    "FROM (SELECT universities.name as UnvId, characteristics.name as CarName, AVG(car_value) AS CarMeanValue "
+                    "FROM responses "
+                    "LEFT JOIN students ON students.id = responses.std_id "
+                    "LEFT JOIN responses_characteristics ON responses.id = responses_characteristics.resp_id "
+                    "INNER JOIN characteristics ON characteristics.id = responses_characteristics.car_id "
+                    "INNER JOIN universities ON universities.id = students.unv_id "
+                    "GROUP BY universities.name, characteristics.name "
+                    "ORDER BY universities.name) AS foo "
+                    "GROUP BY UnvId")
+                objects = cursor.fetchall()
+        average_characteristics = {}
+        for unv_id, characteristics in objects:
+            characteristics = {ch.split(":")[0]: round(float(ch.split(":")[1]), 2) for ch in characteristics}
+            average_characteristics[unv_id] = characteristics
+        return average_characteristics
+
     def generate_id(self, prefix):
         now = datetime.now()
         timestamp = str(round(datetime.timestamp(now)))
@@ -310,17 +331,23 @@ if __name__ == "__main__":
     # un = connection.get_university_by_id('unv-16185-0rsESB-99209')
     # print(un.__dict__)
     #
-    ps = connection.get_teachers_by_university_id('unv-16185-0rsESB-99209')
-    one_pos = ps[10]
+    # ps = connection.get_teachers_by_university_id('unv-16185-0rsESB-99209')
+    # one_pos = ps[10]
+    #
+    # # one_pos = connection.get_position_by_position_id('pos-16185-e4LFqt-99219')
+    # for key in one_pos.__dict__:
+    #     try:
+    #         print(one_pos.__dict__[key].__dict__)
+    #     except:
+    #         pass
 
-    # one_pos = connection.get_position_by_position_id('pos-16185-e4LFqt-99219')
-    for key in one_pos.__dict__:
-        try:
-            print(one_pos.__dict__[key].__dict__)
-        except:
-            pass
+    # connection.save_response(
+    #     Response('pos-16185-0epVeI-99240', 'std-16186-r5nKuJ-19978', characteristics))
 
     # all_ps = connection.get_all_positions()
     # print([p.__dict__ for p in all_ps])
+
+    chs = connection.get_universities_average_characteristics()
+    print(chs)
 
     connection.close_connection()
