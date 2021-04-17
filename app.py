@@ -20,7 +20,7 @@ login_manager = LoginManager(app)
 @app.route('/')
 def main():
     data = 'Main page'
-    return flask.render_template('index.html', token=data)
+    return flask.render_template('index.html', token=)
 
 
 @app.route('/registration')

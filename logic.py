@@ -14,7 +14,7 @@ def data_profile():
     data = {"is_logged": is_logged_in(),
             "student": {"first_name": user["given_name"], "second_name": user["family_name"],
                         "mail": user["email"], "university": university.name}}
-    return str(data)
+    return json.dumps(data)
 
 
 def data_universities():
@@ -23,4 +23,9 @@ def data_universities():
     db.close_connection()
     data = {"is_logged": is_logged_in(),
             "universities": [university.name for university in universities]}
-    return str(data)
+    return json.dumps(data)
+
+
+def data_base():
+    data = {"is_logged": is_logged_in()}
+    return json.dumps(data)
