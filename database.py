@@ -219,14 +219,26 @@ class DBConnection:
         with self._connection:
             with self._connection.cursor() as cursor:
                 cursor.execute(
-                    "SELECT positions.id, unv_id, fcl_id, cor_id, tec_id, teachers.name, photo "
+                    "SELECT positions.id, "
+                    "unv_id, universities.name, universities.domain, universities.logotype, "
+                    "fcl_id, faculties.name, "
+                    "cor_id, courses.name, "
+                    "tec_id, teachers.name, photo "
                     "FROM positions "
-                    "LEFT JOIN teachers ON positions.tec_id = teachers.id")
+                    "LEFT JOIN teachers ON positions.tec_id = teachers.id "
+                    "LEFT JOIN universities ON positions.unv_id = universities.id "
+                    "LEFT JOIN faculties ON positions.fcl_id = faculties.id "
+                    "LEFT JOIN courses ON positions.cor_id = courses.id")
                 objects = cursor.fetchall()
         positions = []
         if objects is not None:
             for obj in objects:
-                position = Position(*obj)
+                position_id = obj[0]
+                university = University(*obj[1:5])
+                faculty = Faculty(*obj[5:7])
+                course = Course(*obj[7:9])
+                teacher = Teacher(*obj[9:12])
+                position = Position(position_id, university, faculty, course, teacher)
                 positions.append(position)
             return positions
 

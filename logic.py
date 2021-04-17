@@ -123,7 +123,7 @@ def generate_plot(position_id):
 
 
 if __name__ == "__main__":
-    pos_json = data_position('pos-16185-0epVeI-99240')
+    pos_json = data_lectures() # data_position('pos-16185-0epVeI-99240')
     print(pos_json)
 
     # test_obj = ObjectForJson()
