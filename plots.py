@@ -129,6 +129,9 @@ def generate_polar_plot(data: Dict[str, int]) -> str:
         'displayModeBar': False
     })
 
+def dict_to_df(dictionary):
+    return pd.DataFrame.from_dict(dictionary, orient='index')
+
 def get_teacher_plot(responses: List[Response], plot_type: str):
     """Return a plot given responses.
 
@@ -155,6 +158,7 @@ def get_teacher_plot(responses: List[Response], plot_type: str):
  "vertical", "horizontal" or "polar"')
 
 
+
 def get_all_universities_statistics(df: pd.DataFrame) -> str:
     """Return HTML code, that represents a chart showing statistics on all universities.
 
@@ -163,6 +167,8 @@ def get_all_universities_statistics(df: pd.DataFrame) -> str:
     df : DataFrame
         each row represents a university and each column represents a characteristic.
     """
+    if isinstance(df, dict): 
+        df = dict_to_df(df)
     norm = matplotlib.colors.Normalize(vmin=0, vmax=5, clip=True)
     mapper = cm.ScalarMappable(norm=norm, cmap=cm.RdYlGn)
     def val_to_color(val):
@@ -266,6 +272,9 @@ def get_universities_comparison(df : pd.DataFrame) -> str:
     df : DataFrame
         each row represents a university and each column represents a characteristic.
     """
+
+    if isinstance(df, dict): 
+        df = dict_to_df(df)
     d = {'x': [], 'y': [], 'group': []}
     for i in df.index:
         d['group'].extend([i]*df.shape[1])
@@ -468,7 +477,12 @@ if __name__ == "__main__":
         div = get_universities_table(aver_evaluations)
 
     with open("test_plots.html", 'w') as f:
+        # df = pd.DataFrame.from_dict(, orient='index')
+        div = get_universities_comparison({"Національний університет 'Києво-Могилянська академія'": {'politeness': 2.0, 'complexity': 5.0, 'material': 4.0, 'loyalty': 5.0, 'adaptation': 3.0, 'relevance': 5.0, 'general': 5.0, 'objectivity': 4.0, 'sufficiency': 4.0, 'punctuality': 4.0}, 'Український Католицький Університет': {'complexity': 3.83, 'objectivity': 3.25, 'politeness': 3.25, 'punctuality': 3.33, 'adaptation': 3.33, 'sufficiency': 3.25, 'loyalty': 3.75, 'relevance': 3.58, 'general': 3.42, 'material': 3.58}})
         f.write(div)
+
+    # div = pd.DataFrame.from_dict({"Національний університет 'Києво-Могилянська академія'": {'politeness': 2.0, 'complexity': 5.0, 'material': 4.0, 'loyalty': 5.0, 'adaptation': 3.0, 'relevance': 5.0, 'general': 5.0, 'objectivity': 4.0, 'sufficiency': 4.0, 'punctuality': 4.0}, 'Український Католицький Університет': {'complexity': 3.83, 'objectivity': 3.25, 'politeness': 3.25, 'punctuality': 3.33, 'adaptation': 3.33, 'sufficiency': 3.25, 'loyalty': 3.75, 'relevance': 3.58, 'general': 3.42, 'material': 3.58}}, orient='index')
+    # print(get_universities_comparison(df))
 
     import database
     print(database.DBConnection().get_responses_by_position_id('pos-16185-0WJIl5-99238')) # why it doesn't work?
