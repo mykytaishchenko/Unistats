@@ -68,7 +68,7 @@ class DBConnection:
     def get_student_by_mail(self, mail):
         with self._connection:
             with self._connection.cursor() as cursor:
-                cursor.execute("SELECT students.id, students.name, universities.name "
+                cursor.execute("SELECT students.id, students.name, universities.id "
                                "FROM students "
                                "LEFT JOIN universities "
                                "ON students.unv_id = universities.id "
@@ -186,8 +186,8 @@ if __name__ == "__main__":
     # print(connection.get_students())
     # st = Student('Denis Kyznec1', 'test2@test.com', 'unv-16185-0rsESB-99209')
     # connection.register_student(st)
-    # st = connection.get_student_by_mail('test123@test.com')
-    # print(st)
+    st = connection.get_student_by_mail('test1@test.com')
+    print(st.__dict__)
     std_ids = ['std-16186-MpiQ7X-06504', 'std-16186-pVYxDM-06575']
     pos_ids = ['pos-16185-0epVeI-99240', 'pos-16185-0WJIl5-99238']
     characteristics = {'general': 5,
