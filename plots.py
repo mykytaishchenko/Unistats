@@ -4,7 +4,7 @@ plots.py
 Module for visualizations.
 """
 
-from typing import Dict
+from typing import Dict, List
 
 import plotly.express as px
 import plotly.graph_objects as go
@@ -13,9 +13,10 @@ import matplotlib
 import matplotlib.cm as cm
 import pandas as pd
 import numpy as np
+from models import Response
 
 
-def get_teacher_vertical_plot(data: Dict[str, int]) -> str:
+def generate_vertical_plot(data: Dict[str, int]) -> str:
     """Return a string containing HTML code.
     The returned HTML code is displayed in the browser as a bar chart.
     """
@@ -63,7 +64,7 @@ def get_teacher_vertical_plot(data: Dict[str, int]) -> str:
         'displayModeBar': False
     })
 
-def get_teacher_horizontal_plot(data: Dict[str, int]) -> str:
+def generate_horizontal_plot(data: Dict[str, int]) -> str:
     """Return a string containing HTML code.
     The returned HTML code is displayed in the browser as a bar chart.
     """
@@ -99,9 +100,7 @@ def get_teacher_horizontal_plot(data: Dict[str, int]) -> str:
         'displayModeBar': False
     })
 
-
-
-def get_teacher_polar_plot(data: Dict[str, int]) -> str:
+def generate_polar_plot(data: Dict[str, int]) -> str:
     """Return a string containing HTML code.
     The returned HTML code is displayed in the browser as a polar chart.
     """
@@ -127,6 +126,28 @@ def get_teacher_polar_plot(data: Dict[str, int]) -> str:
     return plot(fig, output_type="div", include_plotlyjs="cdn", show_link=False, config={
         'displayModeBar': False
     })
+
+def get_teacher_plot(responses: List[Response], plot_type: str):
+    """Return a plot given responses.
+
+    plot_type : str
+        should be one of "vertical", "horizontal", "polar"
+    """
+    assert len(responses) >= 1, "Length of responses should be greater than 0"
+    average = {char: 0 for char in responses[0].characteristics.keys()}
+    for response in responses:
+        for char in response.characteristic:
+            average[char] += response.characteristics[char]
+
+    if plot_type == "vertical":
+        return generate_vertical_plot(average)
+    elif plot_type == "horizontal":
+        return generate_vertical_plot(average)
+    elif plot_type == "polar":
+        return generate_vertical_plot(average)
+    else:
+        raise ValueError(f'Invalid argument for plot_type: \"{plot_type}\". Should be either\
+ "vertical", "horizontal" or "polar"')
 
 
 def get_all_universities_statistics(df: pd.DataFrame) -> str:
@@ -235,14 +256,24 @@ def get_all_universities_statistics(df: pd.DataFrame) -> str:
 
 if __name__ == "__main__":
     if True:
-        div = get_teacher_horizontal_plot({"Лояльність": 2.432,
+        # test generate_horizontal_plot
+        div = generate_horizontal_plot({"Лояльність": 2.432,
                     "Компетентність": 3.5351,
                     "Рівень професійно-педагогічної підготовки": 5.0,
                     })
     else:
+        # test get_all_universities_statistics
         df = pd.DataFrame(5*np.random.rand(3, 4), columns=['Пунктуальність', 'Об\'єктивність оцінювання', 'Ввічливість викладача', 'Володіння матеріалом'],
                     index=['Uni1', 'Uni2', 'Uni3'])
         div = get_all_universities_statistics(df)
 
     with open("test_plots.html", 'w') as f:
         f.write(div)
+
+    # test get_teacher_plot
+    # responses = [Response(1, 2)]
+    # get_teacher_plot()
+
+
+    import database
+    print(database.DBConnection().get_responses_by_position_id('pos-16185-0WJIl5-99238')) # why it doesn't work?
