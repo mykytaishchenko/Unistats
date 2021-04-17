@@ -113,7 +113,7 @@ def google_auth_redirect():
         db.close_connection()
         flask.session.pop(AUTH_TOKEN_KEY, None)
         flask.session.pop(AUTH_STATE_KEY, None)
-        return "Вибачте, але ваша пошта не належить до жодного університету у нашій базі."
+        return redirect("/unsuccessful_login")
 
     if db.get_student_by_mail(user_info["email"]) is None:
         db.register_student(Student(user_info["name"], user_info["email"], university_id))

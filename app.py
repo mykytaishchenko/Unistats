@@ -37,7 +37,7 @@ def universities():
 
 @app.route('/lecturers')
 def lecturers():
-    return flask.render_template('index.html')
+    return flask.render_template('index.html', token=logic.data_lectures())
 
 
 @app.route('/university_<m_id>')
@@ -48,12 +48,11 @@ def university(m_id):
 
 @app.route('/lecturer_<m_id>')
 def lecturer(m_id):
-    print(m_id)
     logic.generate_plot(m_id)
     return flask.render_template('index.html', token=logic.data_position(m_id))
 
 
-@app.route('/lecturersurvey_<m_id>')
+@app.route('/lecturer_survey_<m_id>', methods=['GET', 'POST'])
 def lecturer_survey(m_id):
     return flask.render_template('index.html')
 
@@ -75,7 +74,7 @@ def plotly_graph(m_id):
 
 @app.route('/unsuccessful_login')
 def unsuccessful_login():
-    return flask.render_template('index.html')
+    return flask.render_template('index.html', token=logic.data_base())
 
 
 if __name__ == "__main__":
