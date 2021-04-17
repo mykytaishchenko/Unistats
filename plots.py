@@ -182,7 +182,6 @@ def get_teacher_plot(responses: List[Response], plot_type: str):
  "vertical", "horizontal" or "polar"')
 
 
-
 def get_all_universities_statistics(df: pd.DataFrame) -> str:
     """Return HTML code, that represents a chart showing statistics on all universities.
 
@@ -250,7 +249,10 @@ def get_all_universities_statistics(df: pd.DataFrame) -> str:
                 color="black"
             )
         ),
+        showlegend=False,
+        plot_bgcolor='rgba(0,0,0,0)', 
         yaxis_range=[0,5],
+        barmode="group"
     #     legend_font=dict(size=20),
     #     legend_title_font=dict(size=20),
     #     title_font=dict(size=20, color="black")
@@ -260,29 +262,27 @@ def get_all_universities_statistics(df: pd.DataFrame) -> str:
     button1 = dict(method= 'update',
                 label='group',
                 args=[
-                        {'textangle': 90,}, #dict for fig.data[0] updates
+                        {'textangle': 90}, #dict for fig.data[0] updates
                     {"barmode": 'group'} #update layout attribute   
                     ])
 
     button2 = dict(method= 'update',
                 label='stack',
                 args=[
-                    {'textangle': 0, },
+                    {'textangle': 0},
                     {"barmode": 'stack'} #update layout attribute    
             ])
 
-    fig.update_layout(
-        updatemenus=[
-            dict(
-                active=0,
-                buttons= [button1, button2]
-                )
-        ],
-        plot_bgcolor='rgba(0,0,0,0)', 
-        showlegend=False
-    )
+    # fig.update_layout(
+    #     updatemenus=[
+    #         dict(
+    #             active=0,
+    #             buttons= [button1, button2]
+    #             )
+    #     ],
+    #     
+    # )
 
-    fig.update_layout(barmode="group")
     return plot(fig, output_type="div", include_plotlyjs="cdn", show_link=False, config={
         'displayModeBar': False
     })
@@ -477,12 +477,12 @@ if __name__ == "__main__":
                     "Компетентність": 3.5351,
                     "Рівень професійно-педагогічної підготовки": 5.0,
                     })
-    elif False:
+    elif True:
         # test get_all_universities_statistics
         df = pd.DataFrame(5*np.random.rand(3, 4), columns=['Пунктуальність', 'Об\'єктивність оцінювання', 'Ввічливість викладача', 'Володіння матеріалом'],
                     index=['Uni1', 'Uni2', 'Uni3'])
         div = get_all_universities_statistics(df)
-    elif True:
+    elif False:
         # test get_teacher_plot
         responses = []
         for i in range(1):
